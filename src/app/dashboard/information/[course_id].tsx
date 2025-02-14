@@ -6,9 +6,9 @@ import {
   Button,
   StyleSheet,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { CourseDetailsType } from "../types/apiTypes";
-import { APIRequest } from "../api/rest";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { CourseDetailsType } from "@/src/types/apiTypes";
+import { APIRequest } from "@/src/api/rest";
 
 type RowProps = {
   rowNameText: string;
@@ -20,13 +20,16 @@ export default function CourseDetailScreen() {
     null
   );
   const [refreshing, setRefreshing] = useState(true);
-  const { course_id } = useLocalSearchParams<{ course_id: string }>();
+  const { course_id, course_code } = useLocalSearchParams<{
+    course_id: string;
+    course_code: string;
+  }>();
   const router = useRouter();
   const instance = APIRequest.INSTANCE();
 
   const fetchData = async () => {
     const response = await instance.get<CourseDetailsType>(
-      `course-details/${course_id}`
+      `get-course-details/${course_id}`
     );
     if (response) {
       setCourseDetail(response);
@@ -45,6 +48,11 @@ export default function CourseDetailScreen() {
   if (!courseDetail) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Stack.Screen
+          options={{
+            headerTitle: "",
+          }}
+        />
         <Text style={{ fontSize: 18, fontWeight: "700" }}>
           Kurs Detaylarına Erişilemedi
         </Text>
@@ -57,16 +65,21 @@ export default function CourseDetailScreen() {
     return (
       <View style={styles.rowContainer}>
         <Text style={styles.rowName}>{rowNameText} :</Text>
-        <Text style={styles.text}>{dataText}</Text>
+        <Text style={styles.text} numberOfLines={3}>
+          {dataText}
+        </Text>
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>
-        {courseDetail.course_code}: {courseDetail.course_name}
-      </Text>
+      <Stack.Screen
+        options={{
+          headerTitle: course_code,
+        }}
+      />
+      <Text style={styles.header}>{courseDetail.course_name}</Text>
       <Row rowNameText="Eğitmen" dataText={courseDetail.lecturer} />
       <Row rowNameText="Takvim" dataText={courseDetail.schedule} />
       <Row rowNameText="Yardımcı Kaynak" dataText={courseDetail.text_book} />
@@ -100,5 +113,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 15,
+    flexShrink: 1,
   },
 });

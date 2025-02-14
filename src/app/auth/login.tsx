@@ -5,11 +5,12 @@ import {
   StyleSheet,
   TextInput,
   KeyboardAvoidingView,
-  Button,
   Pressable,
 } from "react-native";
-import { APIRequest } from "../api/rest";
-import { Redirect, useRouter } from "expo-router";
+import { APIRequest } from "@/src/api/rest";
+import { useRouter } from "expo-router";
+import { Input } from "@/src/components/Input";
+import { Button } from "@/src/components/Button";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -20,7 +21,8 @@ export default function Auth() {
 
   const login = async () => {
     if (email != "" && password != "") {
-      const response = await instance.get("login");
+      const response = await instance.post("auth", { email, password });
+      console.log(response);
       if (response && response.success) {
         router.replace("/dashboard/information");
         return;
@@ -32,7 +34,19 @@ export default function Auth() {
     }
   };
 
-  return <Redirect href={"/auth/login"} />;
+  return (
+    <KeyboardAvoidingView style={styles.container}>
+      <Input placeholder="Email" onChangeText={(text) => setEmail(text)} />
+      <Input placeholder="Şifre" onChangeText={(text) => setPassword(text)} />
+      <View style={styles.buttonContainer}>
+        <Button title="Giriş Yap" onPress={login} />
+        <Button
+          title="Kayıt Ol"
+          onPress={() => router.push("/auth/register")}
+        />
+      </View>
+    </KeyboardAvoidingView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -42,28 +56,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     rowGap: 10,
   },
-  input: {
-    width: "90%",
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 20,
-    borderColor: "#999",
-    color: "#444",
-  },
   buttonContainer: {
     width: "90%",
     flexDirection: "row",
     justifyContent: "space-around",
-  },
-  button: {
-    backgroundColor: "#333",
-    padding: 5,
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "500",
   },
 });

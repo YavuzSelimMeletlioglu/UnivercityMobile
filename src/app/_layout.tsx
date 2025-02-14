@@ -8,12 +8,20 @@ export default function RootLayout() {
       }}>
       <Stack.Screen name="index" />
       <Stack.Screen
-        name="[course_id]"
+        name="dashboard"
+        options={{
+          headerBackVisible: false,
+          headerTitle: "",
+        }}
+      />
+      <Stack.Screen name="auth/login" />
+      <Stack.Screen
+        name="auth/register"
         options={{
           headerShown: true,
           headerBackVisible: true,
           headerTitle: "",
-          headerBackTitle: "Kurslar",
+          headerBackTitle: "Giriş",
         }}
       />
     </Stack>
